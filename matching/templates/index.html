@@ -1,0 +1,53 @@
+<head>
+  <title>Graph | Basic usage</title>
+{% load staticfiles %}
+  <script type="text/javascript" src="{%static 'vis.js'%}"></script>
+ <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}" />
+  <style type="text/css">
+    #mygraph {
+      width: 400px;
+      height: 400px;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+
+<body>
+<h1 align="center" > Application's IndeX </h1>
+<div id="mygraph"></div>
+
+<script type="text/javascript">
+  // create an array with nodes
+  var nodes = [
+    {% for each in output.nodes %}
+    {id:{{each.id}}, label:'{{each.label}}'},
+    {% endfor %}
+  ];
+
+  // create an array with edges
+  var edges = [
+    {% for each in output.edges %}
+    {from:{{each.from}}, to:{{each.to}}},
+    {% endfor %}
+  ];
+
+  // create a graph
+  var container = document.getElementById('mygraph');
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+  var options = {};
+  var graph = new vis.Graph(container, data, options);
+</script>
+
+{% if latest_poll_list %}
+    <ul>
+    {% for poll in latest_poll_list %}
+        <li><a href="{% url 'polls:detail' poll.id %}">{{ poll.question }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+</body>

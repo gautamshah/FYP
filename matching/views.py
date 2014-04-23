@@ -1,41 +1,29 @@
 from django.shortcuts import render
 from Lib import RevisedDeferredAcceptance
+import json
 
 
 # Create your views here.
 def leAdder(request):
+	inp = json.loads(request.POST['output'])
+
 	foo = RevisedDeferredAcceptance()
 
-	foo.machines = [
-		{
-			'id': 'A',
-			'capacity': 2,
-			'preference': ['c', 'a', 'b'],
-		},
-		{
-			'id': 'B',
-			'capacity': 1,
-			'preference': ['b', 'c'],
-		},
-	]
+	foo.machines = []
+	for each in inp['machines']:
+		foo.machines.append({
+			'id': each['id'].decode('unicode-escape'),
+			'capacity': each['capacity'],
+			'preference': each['pref'],
+		})
 
-	foo.jobs = [
-		{
-			'id': 'a',
-			'size': 2,
-			'preference': ['A'],
-		},
-		{
-			'id': 'b',
-			'size': 1,
-			'preference': ['A', 'B'],
-		},
-		{
-			'id': 'c',
-			'size': 1,
-			'preference': ['B', 'A'],	
-		},
-	]
+	foo.jobs = []
+	for each in inp['jobs']:
+		foo.jobs.append({
+			'id': each['id'].decode('unicode-escape'),
+			'size': each['size'],
+			'preference': each['pref'],
+		})
 
 	foo.run()
 
@@ -44,12 +32,16 @@ def leAdder(request):
 	ct = 0
 	for each in foo.matching:
 		ct += 1
-		nodes.append({'id':ct, 'label':each[0]['id']})
+		nodes.append({'id':ct, 'label':each[0]['id'], 'group': "jobs"})
 		ct += 1
-		nodes.append({'id':ct, 'label':each[1]['id']})
+		nodes.append({'id':ct, 'label':each[1]['id'], 'group': "machines"})
 
 		edges.append({'from': ct-1, 'to':ct})
 
 	output = {'nodes':nodes, 'edges':edges}
 
 	return render(request, 'index.html', {'output':output})
+
+
+def input(request):
+	return render(request, 'input.html')

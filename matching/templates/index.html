@@ -20,7 +20,7 @@
   // create an array with nodes
   var nodes = [
     {% for each in output.nodes %}
-    {id:{{each.id}}, label:'{{each.label}}'},
+    {id:{{each.id}}, label:'{{each.label}}', group: '{{each.group}}'},
     {% endfor %}
   ];
 
@@ -41,13 +41,6 @@
   var graph = new vis.Graph(container, data, options);
 </script>
 
-{% if latest_poll_list %}
-    <ul>
-    {% for poll in latest_poll_list %}
-        <li><a href="{% url 'polls:detail' poll.id %}">{{ poll.question }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No polls are available.</p>
-{% endif %}
+<span style="color: blue">Blue</span> -> Jobs<br>
+<span style="color: yellow">Yellow</span> -> Machines
 </body>

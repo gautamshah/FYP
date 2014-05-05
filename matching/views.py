@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from Lib import RevisedDeferredAcceptance
 import json
+from django.contrib.auth.decorators import login_required
 
 
-# Create your views here.
+@login_required
 def leAdder(request):
 	inp = json.loads(request.POST['output'])
 
@@ -42,6 +43,6 @@ def leAdder(request):
 
 	return render(request, 'index.html', {'output':output})
 
-
+@login_required
 def input(request):
 	return render(request, 'input.html')

@@ -37,11 +37,43 @@ $('#addMachine').click(function(){
 function assignJobClickHandler(id)
 {
 	$('#'+id).click(jobClickHandler);
+	$('#'+id+'_delete').click(jobDeleteHandler);
 }
 
 function assignMachineClickHandler(id)
 {
 	$('#'+id).click(machineClickHandler);
+	$('#'+id+'_delete').click(machineDeleteHandler);
+}
+
+function jobDeleteHandler()
+{
+	var temp = $(this).attr('id').substr($(this).attr('id').indexOf("_") + 1)
+	var id = temp.split('_')[0];
+
+	for (i in jobs)
+	{
+		if (jobs[i]['id'] == id)
+		{
+			jobs.splice(i, 1);
+			removeFromTable('jobsTable', 'job_', id);
+		}
+	}
+}
+
+function machineDeleteHandler()
+{
+	var temp = $(this).attr('id').substr($(this).attr('id').indexOf("_") + 1)
+	var id = temp.split('_')[0];
+
+	for (i in machines)
+	{
+		if (machines[i]['id'] == id)
+		{
+			machines.splice(i, 1);
+			removeFromTable('machinesTable', 'machine_', id);
+		}
+	}
 }
 
 function jobClickHandler()
@@ -251,11 +283,16 @@ $('#machineForm').submit(function(){
 
 function addToTable(table, idPrefix, item)
 {
-	$('#'+table+' > tbody:last').append('<tr id="'+idPrefix+item+'"><td>'+item+'</td></tr>');
+	$('#'+table+' > tbody:last').append('<tr id="row_'+idPrefix+item+'"><td width="90%" id="'+idPrefix+item+'">'+item+'</td><td id="'+idPrefix+item+'_delete">X</td></tr>');
+}
+
+function removeFromTable(table, idPrefix, item)
+{
+	$('#'+'row_'+idPrefix+item).remove()
 }
 
 $('#goToSaved').click(function(){
-	alert("notImplemented");
+	window.location.href = "http://localhost:8000/saved";
 });
 
 $('#reset').click(function(){
@@ -274,4 +311,13 @@ $('#submit').click(function(){
 
 	$('#leForm #output').val(JSON.stringify(output));
 	$('#leForm').submit();
+});
+
+$('#save').click(function(){
+	var info = JSON.stringify({'jobs': jobs, 'machines': machines})	
+	console.log(info)
+
+	jQuery.post('http://localhost:8000/save/', {'info': info}, function(data){console.log(data)})
+
+	alert('Saved!');
 });

@@ -2,11 +2,17 @@ from django.shortcuts import render
 from Lib import RevisedDeferredAcceptance
 import json
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from matching.models import Saved
 
 
 @login_required
-def leAdder(request):
-	inp = json.loads(request.POST['output'])
+def leAdder(request, savedId=None):
+	if (savedId == None):
+		inp = json.loads(request.POST['output'])
+	else:
+		inp = json.loads(Saved.objects.get(pk=savedId).conf)
 
 	foo = RevisedDeferredAcceptance()
 
@@ -46,3 +52,15 @@ def leAdder(request):
 @login_required
 def input(request):
 	return render(request, 'input.html')
+
+@csrf_exempt
+def save(request):
+	Saved.objects.create(user=request.user, conf=request.POST['info'])
+	return HttpResponse('Success')
+
+def saved(request):
+	saved = []
+	for each in Saved.objects.all():
+		if (each.user == request.user):
+			saved.append((each.id, each.conf))
+	return render(request, 'saved.html', {'saved': saved})

@@ -1,0 +1,9 @@
+<h1>Saved</h1>
+
+<br><br>
+
+<table border=1>
+{% for each in saved %}
+	<tr><td>{{each.1}}</td><td><a href="http://localhost:8000/matching/{{each.0}}">Load</a></tr>
+{% endfor %}
+</table>
